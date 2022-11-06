@@ -68,6 +68,8 @@
     value?: StateDefinition["value"];
     /** Whether the `Listbox` should allow mutliple selections */
     multiple?: boolean;
+    /** The name used when using this component inside a form. */
+    name?: string;
   };
 </script>
 
@@ -87,6 +89,8 @@
   import type { HTMLActionArray } from "$lib/hooks/use-actions";
   import Render from "$lib/utils/Render.svelte";
   import type { TPassThroughProps } from "$lib/types";
+  import Hidden, { Features as HiddenFeatures } from "$lib/internal/Hidden.svelte";
+  import { objectToFormEntries } from "$lib/utils/form";
 
   /***** Props *****/
   type TAsProp = $$Generic<SupportedAs>;
@@ -98,6 +102,7 @@
   export let horizontal = false;
   export let multiple = false;
   export let value: StateDefinition["value"];
+  export let name: string | null = null;
 
   /***** Events *****/
   const forwardEvents = forwardEventsBuilder(get_current_component(), [
@@ -307,6 +312,21 @@
 </script>
 
 <svelte:window on:mousedown={handleMousedown} />
+
+{#if name != null && value != null}
+  {@const options = objectToFormEntries({ [name]: value })}
+  {#each options as [optionName, optionValue], index (index)}      
+    <Hidden
+      features={HiddenFeatures.Hidden}
+      as="input"
+      type="hidden"
+      hidden
+      readonly
+      name={optionName}
+      value={optionValue}
+    />
+  {/each}
+{/if}  
 <Render
   {...$$restProps}
   {as}
