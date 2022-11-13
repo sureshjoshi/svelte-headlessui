@@ -118,9 +118,13 @@
     let event = e as any as MouseEvent;
     if (disabled) return event.preventDefault();
     $api.select(value);
-    $api.closeListbox();
+    if ($api.mode === ValueMode.Single) {
+      $api.closeListbox();
+    }
     await tick();
-    $buttonRef?.focus({ preventScroll: true });
+    if ($api.mode === ValueMode.Single) {
+      $buttonRef?.focus({ preventScroll: true });
+    }
   }
 
   function handleFocus() {
